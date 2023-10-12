@@ -3,7 +3,8 @@ import { styled } from 'styled-components'
 import { useDispatch, useSelector } from 'react-redux'
 import IssueForm from '../../components/organisms/IssueForm'
 import { toggle, push } from '../../features/ui/uiSlice'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import axios from 'axios'
 
 const StyledTableContainer = styled.div`
   overflow: scroll;
@@ -56,7 +57,27 @@ const IssueBody = ({ searchFields, handleCheck, setIsChecked, isChecked }) => {
   const dispatch = useDispatch()
   const [isCheckedAll, setIsCheckedAll] = useState(false)
 
+  const [datas, setDatas] = useState([])
+
   const data = useSelector((state) => state.issue.data)
+
+  async function fetchIssues() {
+    const owener = 'canopus-m-satoshi'
+    const repo = 'redux-api-github-viewer'
+
+    await axios
+      .get(`https://api.github.com/repos/${owener}/${repo}/issues`)
+      .then((response) => {
+        setDatas(response.data)
+      })
+      .catch((error) => {
+        console.error('エラー:', error)
+      })
+  }
+
+  useEffect(() => {
+    fetchIssues()
+  }, [])
 
   const handleModalShow = (e, data) => {
     dispatch(push(<IssueForm defaultValue={data} />))
@@ -90,7 +111,7 @@ const IssueBody = ({ searchFields, handleCheck, setIsChecked, isChecked }) => {
             <StyledTableTh>更新日付</StyledTableTh>
           </StyledTableTr>
         </thead>
-        <tbody>
+        {/* <tbody>
           {searchFields.length > 0 ? (
             searchFields.map((data) => (
               <StyledTableTr key={data.id} onClick={(e) => handleModalShow(e, data)}>
@@ -107,6 +128,31 @@ const IssueBody = ({ searchFields, handleCheck, setIsChecked, isChecked }) => {
                 <StyledTableTd>{data.author}</StyledTableTd>
                 <StyledTableTd>{data.createdDate}</StyledTableTd>
                 <StyledTableTd>{data.updatedDate}</StyledTableTd>
+              </StyledTableTr>
+            ))
+          ) : (
+            <StyledTableTr>
+              <StyledTableTd>データがありません</StyledTableTd>
+            </StyledTableTr>
+          )}
+        </tbody> */}
+        <tbody>
+          {searchFields.length > 0 ? (
+            datas.map((data) => (
+              <StyledTableTr key={data.id} onClick={(e) => handleModalShow(e, data)}>
+                <StyledTableTd>
+                  <input
+                    type="checkbox"
+                    onClick={(e) => e.stopPropagation()}
+                    onChange={() => handleCheck(data.id)}
+                    checked={isChecked[data.id] || false}
+                  />
+                </StyledTableTd>
+                <StyledTableTd>{data.title}</StyledTableTd>
+                <StyledTableTd>{data.state}</StyledTableTd>
+                <StyledTableTd>{data.user.login}</StyledTableTd>
+                <StyledTableTd>{data.created_at}</StyledTableTd>
+                <StyledTableTd>{data.updated_at}</StyledTableTd>
               </StyledTableTr>
             ))
           ) : (
