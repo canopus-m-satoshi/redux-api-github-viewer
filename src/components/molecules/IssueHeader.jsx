@@ -3,7 +3,7 @@ import Button from '../atoms/Button'
 import HeaderTitle from '../atoms/HeaderTitle'
 import Input from '../atoms/Input'
 import IssueForm from '../organisms/IssueForm'
-import { useDispatch, useSelector } from 'react-redux'
+import { useDispatch } from 'react-redux'
 import { toggle, push } from '../../features/ui/uiSlice'
 import { remove } from '../../features/issue/issueSlice'
 
@@ -28,7 +28,6 @@ const StyledHeader = styled.header`
 
 const IssueHeader = ({ onSearchFeilds, isChecked }) => {
   const dispatch = useDispatch()
-  const data = useSelector((state) => state.issue.data)
 
   const onAdd = () => {
     dispatch(push(<IssueForm />))
