@@ -1,41 +1,18 @@
-import { createSlice } from '@reduxjs/toolkit'
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
+import axios from 'axios'
 import { format } from 'date-fns'
 
-const data = [
-  {
-    id: 1,
-    title: 'A bug in Top Page',
-    description:
-      ' Lorem ipsum dolor sit amet consectetur adipisicing elit. At ratione accusantium id nulla, quod ad? Molestiae magnam quos exercitationem alias expedita rerum dolorem repudiandae quam unde, minus aspernatur voluptatem tenetur?',
-    status: 0,
-    author: '',
-    createdDate: '09-17-2023',
-    updatedDate: '09-17-2023',
-  },
-  {
-    id: 2,
-    title: 'A problem of performance in Top Page',
-    description: 'テスト',
-    status: 0,
-    author: '',
-    createdDate: '09-20-2023',
-    updatedDate: '09-21-2023',
-  },
-  {
-    id: 3,
-    title: 'fix layout',
-    description: 'Fiexd Layout',
-    status: 1,
-    author: '',
-    createdDate: '09-07-2023',
-    updatedDate: '09-10-2023',
-  },
-]
-
 const initialState = {
-  // index: data.length,
-  data: data,
+  data: [],
+  status: 'idle',
+  error: null,
 }
+
+// 非同期処理
+export const fetchIssueData = createAsyncThunk('issue/', async () => {
+  const response = await axios.get('https://api.github.com/repos/canopus-m-satoshi/redux-api-github-viewer/issues')
+  return response.data
+})
 
 export const issueSlice = createSlice({
   name: 'issue',
@@ -74,6 +51,27 @@ export const issueSlice = createSlice({
       const checkedIDs = action.payload.map(Number)
       state.data = state.data.filter((item) => !checkedIDs.includes(item.id))
     },
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(fetchIssueData.pending, (state, action) => {
+        if (state.loading === 'idle') {
+          state.loading = 'pending'
+        }
+      })
+      .addCase(fetchIssueData.fulfilled, (state, action) => {
+        if (state.loading === 'pending') {
+          state.loading = 'idle'
+          state.entities.push(action.payload)
+          state.currentRequestId = undefined
+        }
+      })
+      .addCase(fetchIssueData.rejected, (state, action) => {
+        if (state.loading === 'pending') {
+          state.loading = 'idle'
+          state.error = action.error
+        }
+      })
   },
 })
 

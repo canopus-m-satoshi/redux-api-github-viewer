@@ -5,6 +5,7 @@ import IssueForm from '../../components/organisms/IssueForm'
 import { toggle, push } from '../../features/ui/uiSlice'
 import { useEffect, useState } from 'react'
 import axios from 'axios'
+import { fetchIssueData } from '../../features/issue/issueSlice'
 
 const StyledTableContainer = styled.div`
   overflow: scroll;
@@ -61,24 +62,6 @@ const IssueBody = ({ searchFields, handleCheck, setIsChecked, isChecked }) => {
 
   const data = useSelector((state) => state.issue.data)
 
-  async function fetchIssues() {
-    const owener = 'canopus-m-satoshi'
-    const repo = 'redux-api-github-viewer'
-
-    await axios
-      .get(`https://api.github.com/repos/${owener}/${repo}/issues`)
-      .then((response) => {
-        setDatas(response.data)
-      })
-      .catch((error) => {
-        console.error('エラー:', error)
-      })
-  }
-
-  useEffect(() => {
-    fetchIssues()
-  }, [])
-
   const handleModalShow = (e, data) => {
     dispatch(push(<IssueForm defaultValue={data} />))
 
@@ -96,6 +79,11 @@ const IssueBody = ({ searchFields, handleCheck, setIsChecked, isChecked }) => {
     setIsChecked(newIsChecked)
   }
 
+  useEffect(() => {
+    const fetchedData = dispatch(fetchIssueData())
+    console.log('🚀 ~ file: IssueBody.jsx:84 ~ useEffect ~ fetchedData:', fetchedData)
+  }, [dispatch])
+
   return (
     <StyledTableContainer>
       <StyledTable>
@@ -111,31 +99,6 @@ const IssueBody = ({ searchFields, handleCheck, setIsChecked, isChecked }) => {
             <StyledTableTh>更新日付</StyledTableTh>
           </StyledTableTr>
         </thead>
-        {/* <tbody>
-          {searchFields.length > 0 ? (
-            searchFields.map((data) => (
-              <StyledTableTr key={data.id} onClick={(e) => handleModalShow(e, data)}>
-                <StyledTableTd>
-                  <input
-                    type="checkbox"
-                    onClick={(e) => e.stopPropagation()}
-                    onChange={() => handleCheck(data.id)}
-                    checked={isChecked[data.id] || false}
-                  />
-                </StyledTableTd>
-                <StyledTableTd className="longCdatal">{data.title}</StyledTableTd>
-                <StyledTableTd>{Statuses[data.status]}</StyledTableTd>
-                <StyledTableTd>{data.author}</StyledTableTd>
-                <StyledTableTd>{data.createdDate}</StyledTableTd>
-                <StyledTableTd>{data.updatedDate}</StyledTableTd>
-              </StyledTableTr>
-            ))
-          ) : (
-            <StyledTableTr>
-              <StyledTableTd>データがありません</StyledTableTd>
-            </StyledTableTr>
-          )}
-        </tbody> */}
         <tbody>
           {searchFields.length > 0 ? (
             datas.map((data) => (
