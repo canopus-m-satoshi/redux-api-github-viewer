@@ -80,9 +80,9 @@ const IssueBody = ({ searchFields, handleCheck, setIsChecked, isChecked }) => {
   }
 
   useEffect(() => {
-    const fetchedData = dispatch(fetchIssueData())
-    console.log('🚀 ~ file: IssueBody.jsx:84 ~ useEffect ~ fetchedData:', fetchedData)
-  }, [dispatch])
+    dispatch(fetchIssueData('issue/'))
+    setDatas(data)
+  }, [dispatch, data])
 
   return (
     <StyledTableContainer>
