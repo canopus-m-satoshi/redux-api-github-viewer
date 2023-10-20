@@ -16,7 +16,7 @@ export const fetchIssueData = createAsyncThunk('issue/', async () => {
         Authorization: `Bearer ${process.env.REACT_APP_GITHUB_TOKEN}`,
       },
     })
-  return response.data
+    return response.data
   } catch (error) {
     console.log(error)
   }
@@ -73,6 +73,8 @@ export const issueSlice = createSlice({
           state.entities.push(action.payload)
           state.currentRequestId = undefined
         }
+
+        state.data = action.payload
       })
       .addCase(fetchIssueData.rejected, (state, action) => {
         if (state.loading === 'pending') {
