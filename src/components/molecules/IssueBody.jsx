@@ -80,7 +80,7 @@ const IssueBody = ({ searchFields, handleCheck, setIsChecked, isChecked }) => {
   }
 
   useEffect(() => {
-    dispatch(fetchIssueData('issue/'))
+    dispatch(fetchIssueData())
     setDatas(data)
   }, [dispatch, data])
 
