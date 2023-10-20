@@ -10,8 +10,16 @@ const initialState = {
 
 // 非同期処理
 export const fetchIssueData = createAsyncThunk('issue/', async () => {
-  const response = await axios.get('https://api.github.com/repos/canopus-m-satoshi/redux-api-github-viewer/issues')
+  try {
+    const response = await axios.get('https://api.github.com/repos/canopus-m-satoshi/redux-api-github-viewer/issues', {
+      headers: {
+        Authorization: `Bearer ${process.env.REACT_APP_GITHUB_TOKEN}`,
+      },
+    })
   return response.data
+  } catch (error) {
+    console.log(error)
+  }
 })
 
 export const issueSlice = createSlice({
