@@ -8,10 +8,12 @@ const initialState = {
   error: null,
 }
 
+const GITHUB_URL = 'https://api.github.com/repos/canopus-m-satoshi/redux-api-github-viewer/issues'
+
 // 非同期処理
-export const fetchIssueData = createAsyncThunk('issue', async () => {
+export const fetchIssueData = createAsyncThunk('fetch/issue', async () => {
   try {
-    const response = await axios.get('https://api.github.com/repos/canopus-m-satoshi/redux-api-github-viewer/issues', {
+    const response = await axios.get(GITHUB_URL, {
       headers: {
         Authorization: `Bearer ${process.env.REACT_APP_GITHUB_TOKEN}`,
       },
