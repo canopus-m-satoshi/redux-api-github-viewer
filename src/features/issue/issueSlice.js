@@ -31,7 +31,7 @@ export const issueSlice = createSlice({
 
       state.data.push({
         id: state.data.length + 1,
-        status: Number(action.payload.status),
+        status: Number(action.payload.state),
         title: action.payload.title,
         body: action.payload.body,
         createdDate: today,
@@ -45,11 +45,11 @@ export const issueSlice = createSlice({
         const today = format(new Date(), 'MM-dd-yyyy')
         if (
           state.data[index].title !== action.payload.title ||
-          state.data[index].status !== action.payload.status ||
+          state.data[index].status !== action.payload.state ||
           state.data[index].body !== action.payload.body
         ) {
           state.data[index].title = action.payload.title
-          state.data[index].status = Number(action.payload.status)
+          state.data[index].status = Number(action.payload.state)
           state.data[index].body = action.payload.body
           state.data[index].updatedDate = today
         }

@@ -72,7 +72,7 @@ const StyledAlertText = styled.p`
 `
 
 const IssueForm = ({ defaultValue } = {}) => {
-  const { id, title, status, body } = defaultValue || {}
+  const { id, title, state, body } = defaultValue || {}
   const dispatch = useDispatch()
 
   const [modalTitle, setModalTitle] = useState('')
@@ -84,8 +84,8 @@ const IssueForm = ({ defaultValue } = {}) => {
   useEffect(() => {
     setModalTitle(title)
     setModalBody(body)
-    setModalStatus(status)
-  }, [title, body, status])
+    setModalStatus(state)
+  }, [title, body, state])
 
   const handleOnClose = () => {
     dispatch(toggle())
@@ -171,7 +171,7 @@ const IssueForm = ({ defaultValue } = {}) => {
           {defaultValue && (
             <StyledFormItem>
               <label>ステータス</label>
-              <select defaultValue={status === 0 ? 0 : 1} onChange={onChangeStatus}>
+              <select defaultValue={state} onChange={onChangeStatus}>
                 <option value={0}>Open</option>
                 <option value={1}>Close</option>
               </select>
