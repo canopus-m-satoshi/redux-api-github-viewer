@@ -74,7 +74,13 @@ export const issueSlice = createSlice({
           state.currentRequestId = undefined
         }
 
-        state.data = action.payload
+        const formatDate = action.payload.map((item) => ({
+          ...item,
+          created_at: format(new Date(item.created_at), 'MM-dd-yyyy'),
+          updated_at: format(new Date(item.updated_at), 'MM-dd-yyyy'),
+        }))
+
+        state.data = formatDate
       })
       .addCase(fetchIssueData.rejected, (state, action) => {
         if (state.loading === 'pending') {
