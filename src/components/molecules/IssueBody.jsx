@@ -56,11 +56,9 @@ const Statuses = ['Open', 'Close']
 
 const IssueBody = ({ searchFields, handleCheck, setIsChecked, isChecked }) => {
   const dispatch = useDispatch()
-  const [isCheckedAll, setIsCheckedAll] = useState(false)
-
-  const [datas, setDatas] = useState([])
-
   const data = useSelector((state) => state.issue.data)
+
+  const [isCheckedAll, setIsCheckedAll] = useState(false)
 
   const handleModalShow = (e, data) => {
     dispatch(push(<IssueForm defaultValue={data} />))
@@ -81,8 +79,7 @@ const IssueBody = ({ searchFields, handleCheck, setIsChecked, isChecked }) => {
 
   useEffect(() => {
     dispatch(fetchIssueData())
-    setDatas(data)
-  }, [dispatch, data])
+  }, [dispatch])
 
   return (
     <StyledTableContainer>
@@ -101,7 +98,7 @@ const IssueBody = ({ searchFields, handleCheck, setIsChecked, isChecked }) => {
         </thead>
         <tbody>
           {searchFields.length > 0 ? (
-            datas.map((data) => (
+            data.map((data) => (
               <StyledTableTr key={data.id} onClick={(e) => handleModalShow(e, data)}>
                 <StyledTableTd>
                   <input
