@@ -9,7 +9,7 @@ const initialState = {
 }
 
 // 非同期処理
-export const fetchIssueData = createAsyncThunk('issue/', async () => {
+export const fetchIssueData = createAsyncThunk('issue', async () => {
   try {
     const response = await axios.get('https://api.github.com/repos/canopus-m-satoshi/redux-api-github-viewer/issues', {
       headers: {
@@ -81,6 +81,7 @@ export const issueSlice = createSlice({
         }))
 
         state.data = formatDate
+        console.log('🚀 ~ file: issueSlice.js:84 ~ .addCase ~ formatDate:', formatDate)
       })
       .addCase(fetchIssueData.rejected, (state, action) => {
         if (state.loading === 'pending') {
