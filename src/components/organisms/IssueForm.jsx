@@ -72,20 +72,20 @@ const StyledAlertText = styled.p`
 `
 
 const IssueForm = ({ defaultValue } = {}) => {
-  const { id, title, status, description } = defaultValue || {}
+  const { id, title, status, body } = defaultValue || {}
   const dispatch = useDispatch()
 
   const [modalTitle, setModalTitle] = useState('')
-  const [modalDescription, setModalDescription] = useState('')
+  const [modalBody, setModalBody] = useState('')
   const [modalStatus, setModalStatus] = useState(0)
   const [isError, setIsError] = useState(false)
   const [alertText, setAlertText] = useState('')
 
   useEffect(() => {
     setModalTitle(title)
-    setModalDescription(description)
+    setModalBody(body)
     setModalStatus(status)
-  }, [title, description, status])
+  }, [title, body, status])
 
   const handleOnClose = () => {
     dispatch(toggle())
@@ -96,7 +96,7 @@ const IssueForm = ({ defaultValue } = {}) => {
   }
 
   const onChangeTextarea = (e) => {
-    setModalDescription(e.target.value)
+    setModalBody(e.target.value)
   }
 
   const onChangeStatus = (e) => {
@@ -110,7 +110,7 @@ const IssueForm = ({ defaultValue } = {}) => {
       return
     }
 
-    if (!modalDescription) {
+    if (!modalBody) {
       setIsError(true)
       setAlertText('説明を入力してください')
       return
@@ -121,7 +121,7 @@ const IssueForm = ({ defaultValue } = {}) => {
     dispatch(
       create({
         title: modalTitle,
-        description: modalDescription,
+        body: modalBody,
         status: 0,
       }),
     )
@@ -136,7 +136,7 @@ const IssueForm = ({ defaultValue } = {}) => {
       return
     }
 
-    if (!modalDescription) {
+    if (!modalBody) {
       setIsError(true)
       setAlertText('説明を入力してください')
       return
@@ -148,7 +148,7 @@ const IssueForm = ({ defaultValue } = {}) => {
       update({
         id,
         title: modalTitle,
-        description: modalDescription,
+        body: modalBody,
         status: modalStatus,
       }),
     )
@@ -166,7 +166,7 @@ const IssueForm = ({ defaultValue } = {}) => {
           </StyledFormItem>
           <StyledFormItem>
             <label>説明</label>
-            <textarea placeholder="説明を入力してください" defaultValue={description} onChange={onChangeTextarea}></textarea>
+            <textarea placeholder="説明を入力してください" defaultValue={body} onChange={onChangeTextarea}></textarea>
           </StyledFormItem>
           {defaultValue && (
             <StyledFormItem>

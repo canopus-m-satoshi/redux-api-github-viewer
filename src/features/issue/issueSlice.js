@@ -33,7 +33,7 @@ export const issueSlice = createSlice({
         id: state.data.length + 1,
         status: Number(action.payload.status),
         title: action.payload.title,
-        description: action.payload.description,
+        body: action.payload.body,
         createdDate: today,
         updatedDate: today,
       })
@@ -46,11 +46,11 @@ export const issueSlice = createSlice({
         if (
           state.data[index].title !== action.payload.title ||
           state.data[index].status !== action.payload.status ||
-          state.data[index].description !== action.payload.description
+          state.data[index].body !== action.payload.body
         ) {
           state.data[index].title = action.payload.title
           state.data[index].status = Number(action.payload.status)
-          state.data[index].description = action.payload.description
+          state.data[index].body = action.payload.body
           state.data[index].updatedDate = today
         }
       }
