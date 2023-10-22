@@ -46,7 +46,7 @@ const IssueHeader = ({ onSearchFeilds, isChecked }) => {
       <HeaderTitle title="Issue" />
       <Input onSearchFeilds={onSearchFeilds} />
       <Button text="New" onClick={onAdd} />
-      <Button text="Ddelete" onClick={onDelete} styleType="delete" />
+      <Button text="Delete" onClick={onDelete} styleType="delete" />
     </StyledHeader>
   )
 }
