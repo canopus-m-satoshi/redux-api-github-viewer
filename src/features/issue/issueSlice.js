@@ -24,6 +24,27 @@ export const fetchIssueData = createAsyncThunk('fetch/issue', async () => {
   }
 })
 
+// issue の更新
+export const updateIssueData = createAsyncThunk('update/issue', async (updatedData) => {
+  try {
+    const response = await axios({
+      method: 'patch',
+      url: `${GITHUB_URL}/${updatedData.number}`,
+      headers: {
+        Authorization: `Bearer ${process.env.REACT_APP_GITHUB_TOKEN}`,
+      },
+      data: {
+        title: updatedData.title,
+        body: updatedData.body,
+      },
+    })
+
+    return response
+  } catch (error) {
+    console.log(error)
+  }
+})
+
 export const issueSlice = createSlice({
   name: 'issue',
   initialState,
@@ -83,9 +104,36 @@ export const issueSlice = createSlice({
         }))
 
         state.data = formatDate
-        console.log('🚀 ~ file: issueSlice.js:84 ~ .addCase ~ formatDate:', formatDate)
       })
       .addCase(fetchIssueData.rejected, (state, action) => {
+        if (state.loading === 'pending') {
+          state.loading = 'idle'
+          state.error = action.error
+        }
+      })
+      .addCase(updateIssueData.pending, (state) => {
+        if (state.loading === 'idle') {
+          state.loading = 'pending'
+        }
+      })
+      .addCase(updateIssueData.fulfilled, (state, action) => {
+        const index = state.data.findIndex((item) => item.id === action.payload.data.id)
+
+        if (index !== -1) {
+          const today = format(new Date(), 'MM-dd-yyyy')
+          if (
+            state.data[index].title !== action.payload.data.title ||
+            state.data[index].status !== action.payload.data.state ||
+            state.data[index].body !== action.payload.data.body
+          ) {
+            state.data[index].title = action.payload.data.title
+            state.data[index].status = Number(action.payload.data.state)
+            state.data[index].body = action.payload.data.body
+            state.data[index].updatedDate = today
+          }
+        }
+      })
+      .addCase(updateIssueData.rejected, (state, action) => {
         if (state.loading === 'pending') {
           state.loading = 'idle'
           state.error = action.error
