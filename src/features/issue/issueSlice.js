@@ -26,7 +26,7 @@ export const fetchIssueData = createAsyncThunk('fetch/issue', async () => {
 })
 
 // issue の更新
-export const updateIssueData = createAsyncThunk('update/issue', async (updatedData) => {
+export const updateIssue = createAsyncThunk('update/issue', async (updatedData) => {
   try {
     const response = await axios({
       method: 'patch',
@@ -62,23 +62,7 @@ export const issueSlice = createSlice({
         updatedDate: today,
       })
     },
-    update: (state, action) => {
-      const index = state.data.findIndex((item) => item.id === action.payload.id)
 
-      if (index !== -1) {
-        const today = format(new Date(), 'MM-dd-yyyy')
-        if (
-          state.data[index].title !== action.payload.title ||
-          state.data[index].status !== action.payload.state ||
-          state.data[index].body !== action.payload.body
-        ) {
-          state.data[index].title = action.payload.title
-          state.data[index].status = Number(action.payload.state)
-          state.data[index].body = action.payload.body
-          state.data[index].updatedDate = today
-        }
-      }
-    },
     remove: (state, action) => {
       const checkedIDs = action.payload.map(Number)
       state.data = state.data.filter((item) => !checkedIDs.includes(item.id))
@@ -112,12 +96,12 @@ export const issueSlice = createSlice({
           state.error = action.error
         }
       })
-      .addCase(updateIssueData.pending, (state) => {
+      .addCase(updateIssue.pending, (state) => {
         if (state.loading === 'idle') {
           state.loading = 'pending'
         }
       })
-      .addCase(updateIssueData.fulfilled, (state, action) => {
+      .addCase(updateIssue.fulfilled, (state, action) => {
         const index = state.data.findIndex((item) => item.id === action.payload.data.id)
 
         if (index !== -1) {
@@ -143,7 +127,7 @@ export const issueSlice = createSlice({
           }
         }
       })
-      .addCase(updateIssueData.rejected, (state, action) => {
+      .addCase(updateIssue.rejected, (state, action) => {
         if (state.loading === 'pending') {
           state.loading = 'idle'
           state.error = action.error

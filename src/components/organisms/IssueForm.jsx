@@ -5,7 +5,7 @@ import Title from '../atoms/Title'
 import Button from '../atoms/Button'
 
 import { toggle } from '../../features/ui/uiSlice'
-import { update, create, updateIssueData } from '../../features/issue/issueSlice'
+import { update, create, updateIssue } from '../../features/issue/issueSlice'
 import { useEffect, useState } from 'react'
 import axios from 'axios'
 
@@ -146,7 +146,7 @@ const IssueForm = ({ defaultValue } = {}) => {
     setIsError(false)
 
     dispatch(
-      updateIssueData({
+      updateIssue({
         id,
         number,
         title: modalTitle,
