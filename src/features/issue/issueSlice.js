@@ -1,6 +1,7 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import axios from 'axios'
 import { format } from 'date-fns'
+import { toast } from 'react-toastify'
 
 const initialState = {
   data: [],
@@ -130,6 +131,15 @@ export const issueSlice = createSlice({
             state.data[index].status = Number(action.payload.data.state)
             state.data[index].body = action.payload.data.body
             state.data[index].updatedDate = today
+
+            toast.success('Successfully updated!', {
+              autoClose: 4500,
+              position: 'bottom-right',
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+            })
           }
         }
       })
