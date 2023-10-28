@@ -14,7 +14,7 @@ const GITHUB_URL = 'https://api.github.com/repos/canopus-m-satoshi/redux-api-git
 // 非同期処理
 export const fetchIssueData = createAsyncThunk('fetch/issue', async () => {
   try {
-    const response = await axios.get(GITHUB_URL, {
+    const response = await axios.get(`${GITHUB_URL}?state=all`, {
       headers: {
         Authorization: `Bearer ${process.env.REACT_APP_GITHUB_TOKEN}`,
       },
