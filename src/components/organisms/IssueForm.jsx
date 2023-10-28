@@ -78,14 +78,14 @@ const IssueForm = ({ defaultValue } = {}) => {
 
   const [modalTitle, setModalTitle] = useState('')
   const [modalBody, setModalBody] = useState('')
-  const [modalStatus, setModalStatus] = useState(0)
+  const [modalState, setModalState] = useState(0)
   const [isError, setIsError] = useState(false)
   const [alertText, setAlertText] = useState('')
 
   useEffect(() => {
     setModalTitle(title)
     setModalBody(body)
-    setModalStatus(state)
+    setModalState(state)
   }, [title, body, state])
 
   const handleOnClose = () => {
@@ -100,8 +100,8 @@ const IssueForm = ({ defaultValue } = {}) => {
     setModalBody(e.target.value)
   }
 
-  const onChangeStatus = (e) => {
-    setModalStatus(e.target.value)
+  const onChangeState = (e) => {
+    setModalState(e.target.value)
   }
 
   const handleOnCreate = () => {
@@ -151,12 +151,11 @@ const IssueForm = ({ defaultValue } = {}) => {
         number,
         title: modalTitle,
         body: modalBody,
-        status: modalStatus,
+        state: modalState,
       }),
     )
     dispatch(toggle())
   }
-
   return (
     <StyledContainer>
       <Title title="Issueを追加" />
@@ -173,9 +172,9 @@ const IssueForm = ({ defaultValue } = {}) => {
           {defaultValue && (
             <StyledFormItem>
               <label>ステータス</label>
-              <select defaultValue={state} onChange={onChangeStatus}>
-                <option value={0}>Open</option>
-                <option value={1}>Close</option>
+              <select defaultValue={state} onChange={onChangeState}>
+                <option value="open">Open</option>
+                <option value="closed">Closed</option>
               </select>
             </StyledFormItem>
           )}

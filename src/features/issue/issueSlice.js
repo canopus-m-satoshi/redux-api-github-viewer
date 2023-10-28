@@ -37,6 +37,7 @@ export const updateIssue = createAsyncThunk('update/issue', async (updatedData) 
       data: {
         title: updatedData.title,
         body: updatedData.body,
+        state: updatedData.state,
       },
     })
 
@@ -55,14 +56,13 @@ export const issueSlice = createSlice({
 
       state.data.push({
         id: state.data.length + 1,
-        status: Number(action.payload.state),
+        state: action.payload.state,
         title: action.payload.title,
         body: action.payload.body,
         createdDate: today,
         updatedDate: today,
       })
     },
-
     remove: (state, action) => {
       const checkedIDs = action.payload.map(Number)
       state.data = state.data.filter((item) => !checkedIDs.includes(item.id))
@@ -108,14 +108,13 @@ export const issueSlice = createSlice({
           const today = format(new Date(), 'MM-dd-yyyy')
           if (
             state.data[index].title !== action.payload.data.title ||
-            state.data[index].status !== action.payload.data.state ||
+            state.data[index].state !== action.payload.data.state ||
             state.data[index].body !== action.payload.data.body
           ) {
             state.data[index].title = action.payload.data.title
-            state.data[index].status = Number(action.payload.data.state)
+            state.data[index].state = action.payload.data.state
             state.data[index].body = action.payload.data.body
             state.data[index].updatedDate = today
-
             toast.success('Successfully updated!', {
               autoClose: 4500,
               position: 'bottom-right',

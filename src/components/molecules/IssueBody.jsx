@@ -52,8 +52,6 @@ const StyledTableTd = styled.td`
   border-bottom: 1px solid #e1e4e8;
 `
 
-const Statuses = ['Open', 'Close']
-
 const IssueBody = ({ searchFields, handleCheck, setIsChecked, isChecked }) => {
   const dispatch = useDispatch()
   const data = useSelector((state) => state.issue.data)
