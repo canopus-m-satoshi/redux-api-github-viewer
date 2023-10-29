@@ -21,7 +21,7 @@ export const fetchIssueData = createAsyncThunk('fetch/issue', async () => {
     })
     return response.data
   } catch (error) {
-    console.log(error)
+    throw new Error(error)
   }
 })
 
@@ -43,7 +43,7 @@ export const updateIssue = createAsyncThunk('update/issue', async (issue) => {
 
     return response
   } catch (error) {
-    console.log(error)
+    throw new Error(error)
   }
 })
 
