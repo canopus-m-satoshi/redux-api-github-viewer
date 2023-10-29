@@ -58,9 +58,9 @@ const buttonStyleLists = {
   transparent: StyledButtonTransparent,
 }
 
-const Button = ({ text, styleType, onClick }) => {
+const Button = ({ children, styleType, onClick }) => {
   const Component = buttonStyleLists[styleType] || buttonStyleLists.default
 
-  return <Component onClick={onClick}>{text}</Component>
+  return <Component onClick={onClick}>{children}</Component>
 }
 export default Button

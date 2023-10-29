@@ -182,8 +182,10 @@ const IssueForm = ({ defaultValue } = {}) => {
       </StyledFormContainer>
       {isError ? <StyledAlertText $isError={isError}>{alertText}</StyledAlertText> : ''}
       <StyledButtonContainer>
-        {defaultValue ? <Button text="更新" onClick={handleOnUpdate} /> : <Button text="作成" onClick={handleOnCreate} />}
-        <Button text="閉じる" styleType="transparent" onClick={handleOnClose} />
+        {defaultValue ? <Button onClick={handleOnUpdate}>更新</Button> : <Button onClick={handleOnCreate}>作成</Button>}
+        <Button styleType="transparent" onClick={handleOnClose}>
+          閉じる
+        </Button>
       </StyledButtonContainer>
     </StyledContainer>
   )
