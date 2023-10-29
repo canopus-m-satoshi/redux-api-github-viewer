@@ -46,6 +46,34 @@ export const updateIssue = createAsyncThunk('update/issue', async (issue) => {
     throw new Error(error)
   }
 })
+const handleLoadingState = (state, action = null, type) => {
+  switch (type) {
+    case 'pending':
+      if (state.loading === 'idle') {
+        state.loading = 'pending'
+      }
+      break
+
+    case 'fulfilled':
+      if (state.loading === 'pending') {
+        state.loading = 'idle'
+        state.entities.push(action.payload)
+        state.currentRequestId = undefined
+      }
+      break
+
+    case 'rejected':
+      if (state.loading === 'pending') {
+        state.loading = 'idle'
+        state.error = action.error
+      }
+      break
+
+    default:
+      state.loading = 'pending'
+      break
+  }
+}
 
 export const issueSlice = createSlice({
   name: 'issue',
@@ -70,17 +98,11 @@ export const issueSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addCase(fetchIssueData.pending, (state, action) => {
-        if (state.loading === 'idle') {
-          state.loading = 'pending'
-        }
+      .addCase(fetchIssueData.pending, (state) => {
+        handleLoadingState(state, null, 'pending')
       })
       .addCase(fetchIssueData.fulfilled, (state, action) => {
-        if (state.loading === 'pending') {
-          state.loading = 'idle'
-          state.entities.push(action.payload)
-          state.currentRequestId = undefined
-        }
+        handleLoadingState(state, action, 'fulfilled')
 
         const formatDate = action.payload.map((item) => ({
           ...item,
@@ -91,17 +113,14 @@ export const issueSlice = createSlice({
         state.data = formatDate
       })
       .addCase(fetchIssueData.rejected, (state, action) => {
-        if (state.loading === 'pending') {
-          state.loading = 'idle'
-          state.error = action.error
-        }
+        handleLoadingState(state, action, 'rejected')
       })
       .addCase(updateIssue.pending, (state) => {
-        if (state.loading === 'idle') {
-          state.loading = 'pending'
-        }
+        handleLoadingState(state, null, 'pending')
       })
       .addCase(updateIssue.fulfilled, (state, action) => {
+        handleLoadingState(state, action, 'fulfilled')
+
         const index = state.data.findIndex((item) => item.id === action.payload.data.id)
 
         if (index !== -1) {
@@ -127,10 +146,7 @@ export const issueSlice = createSlice({
         }
       })
       .addCase(updateIssue.rejected, (state, action) => {
-        if (state.loading === 'pending') {
-          state.loading = 'idle'
-          state.error = action.error
-        }
+        handleLoadingState(state, action, 'rejected')
       })
   },
 })
