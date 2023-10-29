@@ -46,6 +46,33 @@ export const updateIssue = createAsyncThunk('update/issue', async (issue) => {
     throw new Error(error)
   }
 })
+
+export const closeIssue = createAsyncThunk('close/issue', async (checkedItems) => {
+  try {
+    const responses = []
+    for (let i = 0; i < checkedItems.length; i++) {
+      const checkedItem = checkedItems[i]
+      const response = await axios({
+        method: 'patch',
+        url: `${GITHUB_URL}/${checkedItem}`,
+        headers: {
+          Authorization: `Bearer ${process.env.REACT_APP_GITHUB_TOKEN}`,
+        },
+        data: {
+          state: 'close',
+        },
+      })
+
+      // return response
+      responses.push(response)
+    }
+
+    return responses
+  } catch (error) {
+    throw new Error(error)
+  }
+})
+
 const handleLoadingState = (state, action = null, type) => {
   switch (type) {
     case 'pending':
