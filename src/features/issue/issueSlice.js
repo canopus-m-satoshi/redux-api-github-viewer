@@ -26,18 +26,18 @@ export const fetchIssueData = createAsyncThunk('fetch/issue', async () => {
 })
 
 // issue の更新
-export const updateIssue = createAsyncThunk('update/issue', async (updatedData) => {
+export const updateIssue = createAsyncThunk('update/issue', async (issue) => {
   try {
     const response = await axios({
       method: 'patch',
-      url: `${GITHUB_URL}/${updatedData.number}`,
+      url: `${GITHUB_URL}/${issue.number}`,
       headers: {
         Authorization: `Bearer ${process.env.REACT_APP_GITHUB_TOKEN}`,
       },
       data: {
-        title: updatedData.title,
-        body: updatedData.body,
-        state: updatedData.state,
+        title: issue.title,
+        body: issue.body,
+        state: issue.state,
       },
     })
 
