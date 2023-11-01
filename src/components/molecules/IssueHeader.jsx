@@ -5,7 +5,7 @@ import Input from '../atoms/Input'
 import IssueForm from '../organisms/IssueForm'
 import { useDispatch } from 'react-redux'
 import { toggle, push } from '../../features/ui/uiSlice'
-import { remove } from '../../features/issue/issueSlice'
+import { closeIssue, remove } from '../../features/issue/issueSlice'
 
 const StyledHeader = styled.header`
   display: flex;
@@ -34,11 +34,8 @@ const IssueHeader = ({ onSearchFeilds, isChecked }) => {
     dispatch(toggle())
   }
 
-  const onDelete = () => {
-    // isCheckedオブジェクトを用いて、選択されているIssueのidを特定
-    const selectedIds = Object.keys(isChecked).filter((id) => isChecked[id])
-
-    dispatch(remove(selectedIds))
+  const onClose = () => {
+    dispatch(closeIssue(isChecked))
   }
 
   return (
@@ -46,8 +43,8 @@ const IssueHeader = ({ onSearchFeilds, isChecked }) => {
       <HeaderTitle title="Issue" />
       <Input onSearchFeilds={onSearchFeilds} />
       <Button onClick={onAdd}>New</Button>
-      <Button onClick={onDelete} styleType="delete">
-        Delete
+      <Button onClick={onClose} styleType="delete">
+        Close Issue
       </Button>
     </StyledHeader>
   )

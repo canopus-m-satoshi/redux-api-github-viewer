@@ -12,7 +12,7 @@ import TabPanels from '../molecules/TabPanels'
 const Tabs = () => {
   const [selectedTab, setSelectedTab] = useState(Tab.length)
   const [searchField, setSearchField] = useState('')
-  const [isChecked, setIsChecked] = useState({})
+  const [isChecked, setIsChecked] = useState([])
   const [isActive, setIsActive] = useState(false)
   const data = useSelector((state) => state.issue.data)
 
@@ -20,9 +20,18 @@ const Tabs = () => {
     setSelectedTab(index)
   }
 
-  const handleCheck = (id) => {
-    const newIsChecked = { ...isChecked }
-    newIsChecked[id] = !newIsChecked[id]
+  const handleCheck = (issueNumber) => {
+    const newIsChecked = [...isChecked]
+
+    // issueNumberが配列に存在するか確認
+    const index = newIsChecked.indexOf(issueNumber)
+
+    if (index !== -1) {
+      newIsChecked.splice(index, 1)
+    } else {
+      newIsChecked.push(issueNumber)
+    }
+
     setIsChecked(newIsChecked)
   }
 

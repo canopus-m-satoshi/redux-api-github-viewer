@@ -102,8 +102,8 @@ const IssueBody = ({ searchFields, handleCheck, setIsChecked, isChecked }) => {
                   <input
                     type="checkbox"
                     onClick={(e) => e.stopPropagation()}
-                    onChange={() => handleCheck(data.id)}
-                    checked={isChecked[data.id] || false}
+                    onChange={() => handleCheck(data.number)}
+                    // checked={isChecked[data.id] || false}
                   />
                 </StyledTableTd>
                 <StyledTableTd>{data.title}</StyledTableTd>

@@ -9,6 +9,8 @@ const initialState = {
   error: null,
 }
 
+const today = format(new Date(), 'MM-dd-yyyy')
+
 const GITHUB_URL = 'https://api.github.com/repos/canopus-m-satoshi/redux-api-github-viewer/issues'
 
 // 非同期処理
@@ -49,25 +51,21 @@ export const updateIssue = createAsyncThunk('update/issue', async (issue) => {
 
 export const closeIssue = createAsyncThunk('close/issue', async (checkedItems) => {
   try {
-    const responses = []
-    for (let i = 0; i < checkedItems.length; i++) {
-      const checkedItem = checkedItems[i]
-      const response = await axios({
-        method: 'patch',
-        url: `${GITHUB_URL}/${checkedItem}`,
-        headers: {
-          Authorization: `Bearer ${process.env.REACT_APP_GITHUB_TOKEN}`,
-        },
-        data: {
-          state: 'close',
-        },
-      })
-
-      // return response
-      responses.push(response)
-    }
-
-    return responses
+    const responses = await Promise.all(
+      checkedItems.map((checkedItem) => {
+        return axios({
+          method: 'patch',
+          url: `${GITHUB_URL}/${checkedItem}`,
+          headers: {
+            Authorization: `Bearer ${process.env.REACT_APP_GITHUB_TOKEN}`,
+          },
+          data: {
+            state: 'close',
+          },
+        })
+      }),
+    )
+    return responses // 返り値を設定
   } catch (error) {
     throw new Error(error)
   }
@@ -107,8 +105,6 @@ export const issueSlice = createSlice({
   initialState,
   reducers: {
     create: (state, action) => {
-      const today = format(new Date(), 'MM-dd-yyyy')
-
       state.data.push({
         id: state.data.length + 1,
         state: action.payload.state,
@@ -117,10 +113,6 @@ export const issueSlice = createSlice({
         createdDate: today,
         updatedDate: today,
       })
-    },
-    remove: (state, action) => {
-      const checkedIDs = action.payload.map(Number)
-      state.data = state.data.filter((item) => !checkedIDs.includes(item.id))
     },
   },
   extraReducers: (builder) => {
@@ -151,7 +143,6 @@ export const issueSlice = createSlice({
         const index = state.data.findIndex((item) => item.id === action.payload.data.id)
 
         if (index !== -1) {
-          const today = format(new Date(), 'MM-dd-yyyy')
           if (
             state.data[index].title !== action.payload.data.title ||
             state.data[index].state !== action.payload.data.state ||
@@ -173,6 +164,35 @@ export const issueSlice = createSlice({
         }
       })
       .addCase(updateIssue.rejected, (state, action) => {
+        handleLoadingState(state, action, 'rejected')
+      })
+      .addCase(closeIssue.pending, (state) => {
+        handleLoadingState(state, null, 'pending')
+      })
+      .addCase(closeIssue.fulfilled, (state, action) => {
+        handleLoadingState(state, action, 'fulfilled')
+
+        const closedDatas = action.payload
+
+        closedDatas.forEach((closedData) => {
+          const index = state.data.findIndex((item) => item.id === closedData.data.id)
+
+          if (index !== -1) {
+            state.data[index].state = 'closed'
+            state.data[index].updatedDate = today
+          }
+        })
+
+        toast.success('Issue Closed!', {
+          autoClose: 4500,
+          position: 'bottom-right',
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        })
+      })
+      .addCase(closeIssue.rejected, (state, action) => {
         handleLoadingState(state, action, 'rejected')
       })
   },

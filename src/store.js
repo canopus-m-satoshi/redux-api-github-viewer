@@ -7,7 +7,7 @@ export const store = configureStore({
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: {
-        ignoredActions: ['ui/push', 'update/issue/fulfilled'],
+        ignoredActions: ['ui/push', 'update/issue/fulfilled', 'close/issue/fulfilled'],
         ignoredPaths: ['ui.modal.stack'],
       },
     }),
