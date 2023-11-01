@@ -11,6 +11,15 @@ const initialState = {
 
 const today = format(new Date(), 'MM-dd-yyyy')
 
+const toastConfig = {
+    autoClose: 4500,
+    position: 'bottom-right',
+    closeOnClick: true,
+    pauseOnHover: true,
+    draggable: true,
+    progress: undefined,
+}
+
 const GITHUB_URL = 'https://api.github.com/repos/canopus-m-satoshi/redux-api-github-viewer/issues'
 
 // 非同期処理
@@ -152,14 +161,7 @@ export const issueSlice = createSlice({
             state.data[index].state = action.payload.data.state
             state.data[index].body = action.payload.data.body
             state.data[index].updatedDate = today
-            toast.success('Successfully updated!', {
-              autoClose: 4500,
-              position: 'bottom-right',
-              closeOnClick: true,
-              pauseOnHover: true,
-              draggable: true,
-              progress: undefined,
-            })
+            toast.success('Successfully updated!', toastConfig.default)
           }
         }
       })
@@ -180,16 +182,8 @@ export const issueSlice = createSlice({
           if (index !== -1) {
             state.data[index].state = 'closed'
             state.data[index].updatedDate = today
+            toast.success('Issue Closed!', toastConfig)
           }
-        })
-
-        toast.success('Issue Closed!', {
-          autoClose: 4500,
-          position: 'bottom-right',
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
         })
       })
       .addCase(closeIssue.rejected, (state, action) => {
