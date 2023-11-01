@@ -2,6 +2,7 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import axios from 'axios'
 import { format } from 'date-fns'
 import { toast } from 'react-toastify'
+import { toastConfig } from '../../toastConfig'
 
 const initialState = {
   data: [],
@@ -10,15 +11,6 @@ const initialState = {
 }
 
 const today = format(new Date(), 'MM-dd-yyyy')
-
-const toastConfig = {
-    autoClose: 4500,
-    position: 'bottom-right',
-    closeOnClick: true,
-    pauseOnHover: true,
-    draggable: true,
-    progress: undefined,
-}
 
 const GITHUB_URL = 'https://api.github.com/repos/canopus-m-satoshi/redux-api-github-viewer/issues'
 
@@ -161,7 +153,7 @@ export const issueSlice = createSlice({
             state.data[index].state = action.payload.data.state
             state.data[index].body = action.payload.data.body
             state.data[index].updatedDate = today
-            toast.success('Successfully updated!', toastConfig.default)
+            toast.success('Successfully updated!', toastConfig)
           }
         }
       })
@@ -179,10 +171,15 @@ export const issueSlice = createSlice({
         closedDatas.forEach((closedData) => {
           const index = state.data.findIndex((item) => item.id === closedData.data.id)
 
+          if (state.data[index].state === 'closed') {
+            toast.error(`"${state.data[index].title}" is already closed`, toastConfig)
+            return
+          }
+
           if (index !== -1) {
             state.data[index].state = 'closed'
             state.data[index].updatedDate = today
-            toast.success('Issue Closed!', toastConfig)
+            toast.success(`"${state.data[index].title}" has been closed`, toastConfig)
           }
         })
       })

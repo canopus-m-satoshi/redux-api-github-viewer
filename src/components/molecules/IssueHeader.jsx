@@ -5,7 +5,9 @@ import Input from '../atoms/Input'
 import IssueForm from '../organisms/IssueForm'
 import { useDispatch } from 'react-redux'
 import { toggle, push } from '../../features/ui/uiSlice'
-import { closeIssue, remove } from '../../features/issue/issueSlice'
+import { closeIssue } from '../../features/issue/issueSlice'
+import { toast } from 'react-toastify'
+import { toastConfig } from '../../toastConfig'
 
 const StyledHeader = styled.header`
   display: flex;
@@ -35,7 +37,11 @@ const IssueHeader = ({ onSearchFeilds, isChecked }) => {
   }
 
   const onClose = () => {
-    dispatch(closeIssue(isChecked))
+    if (isChecked.length === 0) {
+      toast.warn('Please Check an issue at least', toastConfig)
+    } else {
+      dispatch(closeIssue(isChecked))
+    }
   }
 
   return (
@@ -43,7 +49,7 @@ const IssueHeader = ({ onSearchFeilds, isChecked }) => {
       <HeaderTitle title="Issue" />
       <Input onSearchFeilds={onSearchFeilds} />
       <Button onClick={onAdd}>New</Button>
-      <Button onClick={onClose} styleType="delete">
+      <Button onClick={onClose} styleType="delete" disabled={isChecked.length === 0 ? true : false}>
         Close Issue
       </Button>
     </StyledHeader>
