@@ -109,8 +109,8 @@ const IssueBody = ({ searchFields, handleCheck, setIsChecked, isChecked }) => {
                 <StyledTableTd>{data.title}</StyledTableTd>
                 <StyledTableTd>{data.state}</StyledTableTd>
                 <StyledTableTd>{data.user.login}</StyledTableTd>
-                <StyledTableTd>{data.created_at}</StyledTableTd>
-                <StyledTableTd>{data.updated_at}</StyledTableTd>
+                <StyledTableTd>{data.createdAt}</StyledTableTd>
+                <StyledTableTd>{data.updatedAt}</StyledTableTd>
               </StyledTableTr>
             ))
           ) : (

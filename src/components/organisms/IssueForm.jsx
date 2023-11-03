@@ -129,7 +129,7 @@ const IssueForm = ({ defaultValue } = {}) => {
     dispatch(toggle())
   }
 
-  const handleOnUpdate = () => {
+  const handleOnUpdate = async () => {
     setIsError(true)
     if (!modalTitle) {
       setIsError(true)
@@ -145,16 +145,24 @@ const IssueForm = ({ defaultValue } = {}) => {
 
     setIsError(false)
 
-    dispatch(
-      updateIssue({
-        id,
-        number,
-        title: modalTitle,
-        body: modalBody,
-        state: modalState,
-      }),
-    )
-    dispatch(toggle())
+    try {
+      const response = await dispatch(
+        updateIssue({
+          id,
+          number,
+          title: modalTitle,
+          body: modalBody,
+          state: modalState,
+        }),
+      )
+      if (response) {
+        toast.success('Successfully updated!', toastConfig)
+      }
+    } catch {
+      toast.success('Failed to Update!', toastConfig)
+    } finally {
+      dispatch(toggle())
+    }
   }
   return (
     <StyledContainer>

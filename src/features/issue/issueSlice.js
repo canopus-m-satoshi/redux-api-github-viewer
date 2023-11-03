@@ -1,8 +1,7 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-import axios from 'axios'
 import { format } from 'date-fns'
-import { toast } from 'react-toastify'
-import { toastConfig } from '../../toastConfig'
+
+import * as api from '../../services/api'
 
 const initialState = {
   data: [],
@@ -12,64 +11,40 @@ const initialState = {
 
 const today = format(new Date(), 'MM-dd-yyyy')
 
-const GITHUB_URL = 'https://api.github.com/repos/canopus-m-satoshi/redux-api-github-viewer/issues'
-
 // 非同期処理
 export const fetchIssueData = createAsyncThunk('fetch/issue', async () => {
-  try {
-    const response = await axios.get(`${GITHUB_URL}?state=all`, {
-      headers: {
-        Authorization: `Bearer ${process.env.REACT_APP_GITHUB_TOKEN}`,
-      },
-    })
-    return response.data
-  } catch (error) {
-    throw new Error(error)
-  }
+  const response = await api.fetchIssues("state=all")
+
+  return response.data
 })
 
 // issue の更新
-export const updateIssue = createAsyncThunk('update/issue', async (issue) => {
-  try {
-    const response = await axios({
-      method: 'patch',
-      url: `${GITHUB_URL}/${issue.number}`,
-      headers: {
-        Authorization: `Bearer ${process.env.REACT_APP_GITHUB_TOKEN}`,
-      },
-      data: {
-        title: issue.title,
-        body: issue.body,
-        state: issue.state,
-      },
-    })
+export const updateIssue = createAsyncThunk('update/issue', async ({ title, body, state }) => {
+  const response = await api.updateIssue(issue.number, {
+    title,
+    body,
+    state
+  })
 
-    return response
-  } catch (error) {
-    throw new Error(error)
-  }
+  return response
 })
 
 export const closeIssue = createAsyncThunk('close/issue', async (checkedItems) => {
-  try {
     const responses = await Promise.all(
       checkedItems.map((checkedItem) => {
-        return axios({
-          method: 'patch',
-          url: `${GITHUB_URL}/${checkedItem}`,
-          headers: {
-            Authorization: `Bearer ${process.env.REACT_APP_GITHUB_TOKEN}`,
-          },
-          data: {
-            state: 'close',
-          },
-        })
+        return api.updateIssue(checkedItem, { state: 'close' })
       }),
     )
-    return responses // 返り値を設定
-  } catch (error) {
-    throw new Error(error)
-  }
+
+    const messages = responses.reduce((acc, item) => {
+      // FIXME: id ごとの結果のメッセージを返す
+      return acc
+    }, {})
+
+    return {
+      reponses: responses,
+      messages
+    }
 })
 
 const handleLoadingState = (state, action = null, type) => {
@@ -109,8 +84,7 @@ export const issueSlice = createSlice({
       state.data.push({
         id: state.data.length + 1,
         state: action.payload.state,
-        title: action.payload.title,
-        body: action.payload.body,
+        title: action.payload.title, body: action.payload.body,
         createdDate: today,
         updatedDate: today,
       })
@@ -126,8 +100,8 @@ export const issueSlice = createSlice({
 
         const formatDate = action.payload.map((item) => ({
           ...item,
-          created_at: format(new Date(item.created_at), 'MM-dd-yyyy'),
-          updated_at: format(new Date(item.updated_at), 'MM-dd-yyyy'),
+          createdAt: format(new Date(item.created_at), 'MM-dd-yyyy'),
+          updatedAt: format(new Date(item.updated_at), 'MM-dd-yyyy'),
         }))
 
         state.data = formatDate
@@ -153,7 +127,6 @@ export const issueSlice = createSlice({
             state.data[index].state = action.payload.data.state
             state.data[index].body = action.payload.data.body
             state.data[index].updatedDate = today
-            toast.success('Successfully updated!', toastConfig)
           }
         }
       })
@@ -171,15 +144,9 @@ export const issueSlice = createSlice({
         closedDatas.forEach((closedData) => {
           const index = state.data.findIndex((item) => item.id === closedData.data.id)
 
-          if (state.data[index].state === 'closed') {
-            toast.error(`"${state.data[index].title}" is already closed`, toastConfig)
-            return
-          }
-
           if (index !== -1) {
             state.data[index].state = 'closed'
             state.data[index].updatedDate = today
-            toast.success(`"${state.data[index].title}" has been closed`, toastConfig)
           }
         })
       })

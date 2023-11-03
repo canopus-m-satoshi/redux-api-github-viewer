@@ -36,11 +36,22 @@ const IssueHeader = ({ onSearchFeilds, isChecked }) => {
     dispatch(toggle())
   }
 
-  const onClose = () => {
+  const onClose = async () => {
     if (isChecked.length === 0) {
       toast.warn('Please Check an issue at least', toastConfig)
-    } else {
-      dispatch(closeIssue(isChecked))
+      return
+    }
+
+    try {
+      const response = await dispatch(closeIssue(isChecked))
+      Object.keys(response.messages).forEach(key => {
+        const { type, message } = response.messages[key]
+        if (toast[type]) {
+          toast[type](message, toastConfig)
+        }
+      })
+    } catch {
+      toast.error("Faield to close issue", toastConfig)
     }
   }
 
