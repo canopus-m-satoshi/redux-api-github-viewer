@@ -4,7 +4,6 @@ import { useDispatch, useSelector } from 'react-redux'
 import IssueForm from '../../components/organisms/IssueForm'
 import { toggle, push } from '../../features/ui/uiSlice'
 import { useEffect, useState } from 'react'
-import axios from 'axios'
 import { fetchIssueData } from '../../features/issue/issueSlice'
 
 const StyledTableContainer = styled.div`

@@ -5,9 +5,8 @@ import Title from '../atoms/Title'
 import Button from '../atoms/Button'
 
 import { toggle } from '../../features/ui/uiSlice'
-import { update, create, updateIssue, createIssue } from '../../features/issue/issueSlice'
+import { updateIssue, createIssue } from '../../features/issue/issueSlice'
 import { useEffect, useState } from 'react'
-import axios from 'axios'
 import { toastConfig } from '../../toastConfig'
 import { toast } from 'react-toastify'
 
