@@ -5,9 +5,11 @@ import Title from '../atoms/Title'
 import Button from '../atoms/Button'
 
 import { toggle } from '../../features/ui/uiSlice'
-import { update, create, updateIssue } from '../../features/issue/issueSlice'
+import { update, create, updateIssue, createIssue } from '../../features/issue/issueSlice'
 import { useEffect, useState } from 'react'
 import axios from 'axios'
+import { toastConfig } from '../../toastConfig'
+import { toast } from 'react-toastify'
 
 const StyledContainer = styled.div`
   display: flex;
@@ -120,10 +122,9 @@ const IssueForm = ({ defaultValue } = {}) => {
     setIsError(false)
 
     dispatch(
-      create({
+      createIssue({
         title: modalTitle,
         body: modalBody,
-        status: 0,
       }),
     )
     dispatch(toggle())

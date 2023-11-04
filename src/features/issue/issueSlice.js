@@ -13,38 +13,47 @@ const today = format(new Date(), 'MM-dd-yyyy')
 
 // 非同期処理
 export const fetchIssueData = createAsyncThunk('fetch/issue', async () => {
-  const response = await api.fetchIssues("state=all")
+  const response = await api.fetchIssues('state=all')
+
+  return response.data
+})
+
+export const createIssue = createAsyncThunk('create/issue', async ({ title, body }) => {
+  const response = await api.createIssue({
+    title,
+    body,
+  })
 
   return response.data
 })
 
 // issue の更新
-export const updateIssue = createAsyncThunk('update/issue', async ({ title, body, state }) => {
-  const response = await api.updateIssue(issue.number, {
+export const updateIssue = createAsyncThunk('update/issue', async ({ title, body, state, number }) => {
+  const response = await api.updateIssue(number, {
     title,
     body,
-    state
+    state,
   })
 
   return response
 })
 
 export const closeIssue = createAsyncThunk('close/issue', async (checkedItems) => {
-    const responses = await Promise.all(
-      checkedItems.map((checkedItem) => {
-        return api.updateIssue(checkedItem, { state: 'close' })
-      }),
-    )
+  const responses = await Promise.all(
+    checkedItems.map((checkedItem) => {
+      return api.updateIssue(checkedItem, { state: 'close' })
+    }),
+  )
 
-    const messages = responses.reduce((acc, item) => {
-      // FIXME: id ごとの結果のメッセージを返す
-      return acc
-    }, {})
+  const messages = responses.reduce((acc, item) => {
+    // FIXME: id ごとの結果のメッセージを返す
+    return acc
+  }, {})
 
-    return {
-      reponses: responses,
-      messages
-    }
+  return {
+    reponses: responses,
+    messages,
+  }
 })
 
 const handleLoadingState = (state, action = null, type) => {
@@ -79,17 +88,7 @@ const handleLoadingState = (state, action = null, type) => {
 export const issueSlice = createSlice({
   name: 'issue',
   initialState,
-  reducers: {
-    create: (state, action) => {
-      state.data.push({
-        id: state.data.length + 1,
-        state: action.payload.state,
-        title: action.payload.title, body: action.payload.body,
-        createdDate: today,
-        updatedDate: today,
-      })
-    },
-  },
+
   extraReducers: (builder) => {
     builder
       .addCase(fetchIssueData.pending, (state) => {
@@ -107,6 +106,25 @@ export const issueSlice = createSlice({
         state.data = formatDate
       })
       .addCase(fetchIssueData.rejected, (state, action) => {
+        handleLoadingState(state, action, 'rejected')
+      })
+      .addCase(createIssue.pending, (state) => {
+        handleLoadingState(state, null, 'pending')
+      })
+      .addCase(createIssue.fulfilled, (state, action) => {
+        handleLoadingState(state, action, 'fulfilled')
+
+        state.data.unshift({
+          title: action.payload.title,
+          body: action.payload.body,
+          state: 'open',
+          user: { login: action.payload.user.login },
+          id: action.payload.id,
+          createdAt: today,
+          updatedAt: today,
+        })
+      })
+      .addCase(createIssue.rejected, (state, action) => {
         handleLoadingState(state, action, 'rejected')
       })
       .addCase(updateIssue.pending, (state) => {
