@@ -20,21 +20,6 @@ const Tabs = () => {
     setSelectedTab(index)
   }
 
-  const handleCheck = (issueNumber) => {
-    const newIsChecked = [...isChecked]
-
-    // issueNumberが配列に存在するか確認
-    const index = newIsChecked.indexOf(issueNumber)
-
-    if (index !== -1) {
-      newIsChecked.splice(index, 1)
-    } else {
-      newIsChecked.push(issueNumber)
-    }
-
-    setIsChecked(newIsChecked)
-  }
-
   const onSearchFeilds = (e) => {
     setSearchField(e.target.value)
   }
@@ -54,7 +39,7 @@ const Tabs = () => {
       <TabPanels>
         <TabPanel selectedTab={selectedTab === 1}>
           <IssueHeader onSearchFeilds={onSearchFeilds} isChecked={isChecked} />
-          <IssueBody searchFields={searchFields} handleCheck={handleCheck} setIsChecked={setIsChecked} isChecked={isChecked} />
+          <IssueBody searchFields={searchFields} setIsChecked={setIsChecked} isChecked={isChecked} />
         </TabPanel>
         <TabPanel selectedTab={selectedTab === 2}>
           <Title title="PullRequest" centering />

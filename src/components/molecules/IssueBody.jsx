@@ -52,10 +52,9 @@ const StyledTableTd = styled.td`
   border-bottom: 1px solid #e1e4e8;
 `
 
-const IssueBody = ({ searchFields, handleCheck, setIsChecked, isChecked }) => {
+const IssueBody = ({ searchFields, isChecked, setIsChecked }) => {
   const dispatch = useDispatch()
   const data = useSelector((state) => state.issue.data)
-
   const [isCheckedAll, setIsCheckedAll] = useState(false)
 
   const handleModalShow = (e, data) => {
@@ -64,12 +63,26 @@ const IssueBody = ({ searchFields, handleCheck, setIsChecked, isChecked }) => {
     dispatch(toggle())
   }
 
+  const handleCheck = (issueNumber) => {
+    const newIsChecked = [...isChecked]
+
+    // issueNumberが配列に存在するか確認
+    const index = newIsChecked.indexOf(issueNumber)
+
+    if (index !== -1) {
+      newIsChecked.splice(index, 1)
+    } else {
+      newIsChecked.push(issueNumber)
+    }
+
+    setIsChecked(newIsChecked)
+  }
+
   const handleCheckboxAll = (data) => {
     setIsCheckedAll(!isCheckedAll)
 
-    const newIsChecked = { ...isChecked }
-    data.forEach((item) => {
-      newIsChecked[item.id] = !isCheckedAll
+    const newIsChecked = data.map((item) => {
+      return isCheckedAll ? false : item.number
     })
 
     setIsChecked(newIsChecked)
@@ -103,7 +116,7 @@ const IssueBody = ({ searchFields, handleCheck, setIsChecked, isChecked }) => {
                     type="checkbox"
                     onClick={(e) => e.stopPropagation()}
                     onChange={() => handleCheck(data.number)}
-                    // checked={isChecked[data.id] || false}
+                    checked={isChecked.includes(data.number)}
                   />
                 </StyledTableTd>
                 <StyledTableTd>{data.title}</StyledTableTd>
