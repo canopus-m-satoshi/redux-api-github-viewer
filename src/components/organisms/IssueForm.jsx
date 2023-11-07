@@ -105,7 +105,7 @@ const IssueForm = ({ defaultValue } = {}) => {
     setModalState(e.target.value)
   }
 
-  const handleOnCreate = () => {
+  const handleOnCreate = async () => {
     if (!modalTitle) {
       setIsError(true)
       setAlertText('タイトルを入力してください')
@@ -120,13 +120,22 @@ const IssueForm = ({ defaultValue } = {}) => {
 
     setIsError(false)
 
-    dispatch(
-      createIssue({
-        title: modalTitle,
-        body: modalBody,
-      }),
-    )
-    dispatch(toggle())
+    try {
+      const response = await dispatch(
+        createIssue({
+          title: modalTitle,
+          body: modalBody,
+        }),
+      )
+
+      if (response) {
+        toast.success('Successfully createded!', toastConfig)
+      }
+    } catch (error) {
+      toast.error('Something wrong occured', toastConfig)
+    } finally {
+      dispatch(toggle())
+    }
   }
 
   const handleOnUpdate = async () => {
@@ -159,7 +168,7 @@ const IssueForm = ({ defaultValue } = {}) => {
         toast.success('Successfully updated!', toastConfig)
       }
     } catch {
-      toast.success('Failed to Update!', toastConfig)
+      toast.error('Failed to Update!', toastConfig)
     } finally {
       dispatch(toggle())
     }
