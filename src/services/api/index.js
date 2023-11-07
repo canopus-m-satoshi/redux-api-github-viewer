@@ -1,6 +1,7 @@
 import axios from 'axios'
 
-const GITHUB_URL = 'https://api.github.com/repos/canopus-m-satoshi/redux-api-github-viewer'
+const GITHUB_URL = 'https://api.github.com'
+const ISSUES_URL = '/repos/canopus-m-satoshi/redux-api-github-viewer/issues'
 
 const instance = axios.create({
   baseURL: GITHUB_URL,
@@ -12,17 +13,17 @@ const instance = axios.create({
 })
 
 export const fetchIssues = (params) => {
-  return instance.get(`/issues?${params}`)
+  return instance.get(`${ISSUES_URL}?${params}`)
 }
 
 export const createIssue = (data) => {
-  return instance.post(`/issues`, data)
+  return instance.post(`${ISSUES_URL}`, data)
 }
 
 export const updateIssue = (id, data) => {
-  return instance.patch(`/issues/${id}`, data)
+  return instance.patch(`${ISSUES_URL}/${id}`, data)
 }
 
 export const fetchUser = () => {
-  return instance.get(`/`)
+  return instance.get(`/users/canopus-m-satoshi`)
 }

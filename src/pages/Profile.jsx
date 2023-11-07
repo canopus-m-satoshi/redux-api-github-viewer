@@ -1,7 +1,8 @@
 import styled from 'styled-components'
 import Title from '../components/atoms/Title'
-
-const avotorURL = 'https://avatars1.githubusercontent.com/u/25723193?s=60&u=5f2d871352830fdf1a79ee285e0712044105ca91&v=4'
+import { useDispatch, useSelector } from 'react-redux'
+import { fetchUserData } from '../features/user/userSlice'
+import { useEffect } from 'react'
 
 const StyledContainer = styled.div`
   margin: 32px 0px;
@@ -25,7 +26,9 @@ const StyledItem = styled.div`
 
 const StyledAvator = styled.img`
   color: #586069;
-  max-width: 100%;
+  max-width: 80%;
+  margin-inline: auto;
+  display: block;
 `
 
 const StyledText = styled.p`
@@ -39,6 +42,14 @@ const StyledDesc = styled.p`
 `
 
 const Profile = () => {
+  const dispatch = useDispatch()
+  const user = useSelector((state) => state.user.data)
+  console.log('🚀 ~ file: Profile.jsx:47 ~ Profile ~ user:', user)
+
+  useEffect(() => {
+    dispatch(fetchUserData())
+  }, [dispatch])
+
   return (
     <div>
       <Title title="Profile" />
@@ -46,14 +57,22 @@ const Profile = () => {
         <StyledItem>
           <StyledText>プロフィール</StyledText>
           <div>
-            <StyledAvator src={avotorURL} />
+            <StyledAvator src={user.avatar_url} />
           </div>
         </StyledItem>
         <StyledItem>
           <StyledText>ユーザ名</StyledText>
-          <StyledDesc>jjoo</StyledDesc>
+          <StyledDesc>{user.name}</StyledDesc>
           <StyledText>メールアドレス</StyledText>
-          <StyledDesc>hoge@example.com</StyledDesc>
+          <StyledDesc>{user.url}</StyledDesc>
+          <StyledText>フォロー数</StyledText>
+          <StyledDesc>{user.following}</StyledDesc>
+          <StyledText>フォロワー数</StyledText>
+          <StyledDesc>{user.followers}</StyledDesc>
+          <StyledText>パブリックレポジトリ数</StyledText>
+          <StyledDesc>{user.public_repos}</StyledDesc>
+          <StyledText>プライベートレポジトリ数</StyledText>
+          <StyledDesc>{user.total_private_repos}</StyledDesc>
         </StyledItem>
       </StyledContainer>
     </div>

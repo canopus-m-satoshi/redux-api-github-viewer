@@ -2,6 +2,7 @@ import { configureStore } from '@reduxjs/toolkit'
 import toggleTabReducer from './features/toggleTabSlice'
 import uiReducer from './features/ui/uiSlice'
 import issueReducer from './features/issue/issueSlice'
+import userReducer from './features/user/userSlice'
 
 export const store = configureStore({
   middleware: (getDefaultMiddleware) =>
@@ -15,5 +16,6 @@ export const store = configureStore({
     toggleTab: toggleTabReducer,
     ui: uiReducer,
     issue: issueReducer,
+    user: userReducer,
   },
 })
