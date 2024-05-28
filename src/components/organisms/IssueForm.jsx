@@ -5,8 +5,10 @@ import Title from '../atoms/Title'
 import Button from '../atoms/Button'
 
 import { toggle } from '../../features/ui/uiSlice'
-import { update, create } from '../../features/issue/issueSlice'
+import { updateIssue, createIssue } from '../../features/issue/issueSlice'
 import { useEffect, useState } from 'react'
+import { toastConfig } from '../../toastConfig'
+import { toast } from 'react-toastify'
 
 const StyledContainer = styled.div`
   display: flex;
@@ -72,20 +74,20 @@ const StyledAlertText = styled.p`
 `
 
 const IssueForm = ({ defaultValue } = {}) => {
-  const { id, title, status, description } = defaultValue || {}
+  const { id, title, state, body, number } = defaultValue || {}
   const dispatch = useDispatch()
 
   const [modalTitle, setModalTitle] = useState('')
-  const [modalDescription, setModalDescription] = useState('')
-  const [modalStatus, setModalStatus] = useState(0)
+  const [modalBody, setModalBody] = useState('')
+  const [modalState, setModalState] = useState(0)
   const [isError, setIsError] = useState(false)
   const [alertText, setAlertText] = useState('')
 
   useEffect(() => {
     setModalTitle(title)
-    setModalDescription(description)
-    setModalStatus(status)
-  }, [title, description, status])
+    setModalBody(body)
+    setModalState(state)
+  }, [title, body, state])
 
   const handleOnClose = () => {
     dispatch(toggle())
@@ -96,21 +98,21 @@ const IssueForm = ({ defaultValue } = {}) => {
   }
 
   const onChangeTextarea = (e) => {
-    setModalDescription(e.target.value)
+    setModalBody(e.target.value)
   }
 
-  const onChangeStatus = (e) => {
-    setModalStatus(e.target.value)
+  const onChangeState = (e) => {
+    setModalState(e.target.value)
   }
 
-  const handleOnCreate = () => {
+  const handleOnCreate = async () => {
     if (!modalTitle) {
       setIsError(true)
       setAlertText('タイトルを入力してください')
       return
     }
 
-    if (!modalDescription) {
+    if (!modalBody) {
       setIsError(true)
       setAlertText('説明を入力してください')
       return
@@ -118,17 +120,25 @@ const IssueForm = ({ defaultValue } = {}) => {
 
     setIsError(false)
 
-    dispatch(
-      create({
-        title: modalTitle,
-        description: modalDescription,
-        status: 0,
-      }),
-    )
-    dispatch(toggle())
+    try {
+      const response = await dispatch(
+        createIssue({
+          title: modalTitle,
+          body: modalBody,
+        }),
+      )
+
+      if (response) {
+        toast.success('Successfully createded!', toastConfig)
+      }
+    } catch (error) {
+      toast.error('Something wrong occured', toastConfig)
+    } finally {
+      dispatch(toggle())
+    }
   }
 
-  const handleOnUpdate = () => {
+  const handleOnUpdate = async () => {
     setIsError(true)
     if (!modalTitle) {
       setIsError(true)
@@ -136,7 +146,7 @@ const IssueForm = ({ defaultValue } = {}) => {
       return
     }
 
-    if (!modalDescription) {
+    if (!modalBody) {
       setIsError(true)
       setAlertText('説明を入力してください')
       return
@@ -144,17 +154,25 @@ const IssueForm = ({ defaultValue } = {}) => {
 
     setIsError(false)
 
-    dispatch(
-      update({
-        id,
-        title: modalTitle,
-        description: modalDescription,
-        status: modalStatus,
-      }),
-    )
-    dispatch(toggle())
+    try {
+      const response = await dispatch(
+        updateIssue({
+          id,
+          number,
+          title: modalTitle,
+          body: modalBody,
+          state: modalState,
+        }),
+      )
+      if (response) {
+        toast.success('Successfully updated!', toastConfig)
+      }
+    } catch {
+      toast.error('Failed to Update!', toastConfig)
+    } finally {
+      dispatch(toggle())
+    }
   }
-
   return (
     <StyledContainer>
       <Title title="Issueを追加" />
@@ -166,14 +184,14 @@ const IssueForm = ({ defaultValue } = {}) => {
           </StyledFormItem>
           <StyledFormItem>
             <label>説明</label>
-            <textarea placeholder="説明を入力してください" defaultValue={description} onChange={onChangeTextarea}></textarea>
+            <textarea placeholder="説明を入力してください" defaultValue={body} onChange={onChangeTextarea}></textarea>
           </StyledFormItem>
           {defaultValue && (
             <StyledFormItem>
               <label>ステータス</label>
-              <select defaultValue={status === 0 ? 0 : 1} onChange={onChangeStatus}>
-                <option value={0}>Open</option>
-                <option value={1}>Close</option>
+              <select defaultValue={state} onChange={onChangeState}>
+                <option value="open">Open</option>
+                <option value="closed">Closed</option>
               </select>
             </StyledFormItem>
           )}
@@ -181,8 +199,10 @@ const IssueForm = ({ defaultValue } = {}) => {
       </StyledFormContainer>
       {isError ? <StyledAlertText $isError={isError}>{alertText}</StyledAlertText> : ''}
       <StyledButtonContainer>
-        {defaultValue ? <Button text="更新" onClick={handleOnUpdate} /> : <Button text="作成" onClick={handleOnCreate} />}
-        <Button text="閉じる" styleType="transparent" onClick={handleOnClose} />
+        {defaultValue ? <Button onClick={handleOnUpdate}>更新</Button> : <Button onClick={handleOnCreate}>作成</Button>}
+        <Button styleType="transparent" onClick={handleOnClose}>
+          閉じる
+        </Button>
       </StyledButtonContainer>
     </StyledContainer>
   )

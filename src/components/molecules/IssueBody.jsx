@@ -3,7 +3,8 @@ import { styled } from 'styled-components'
 import { useDispatch, useSelector } from 'react-redux'
 import IssueForm from '../../components/organisms/IssueForm'
 import { toggle, push } from '../../features/ui/uiSlice'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { fetchIssueData } from '../../features/issue/issueSlice'
 
 const StyledTableContainer = styled.div`
   overflow: scroll;
@@ -50,13 +51,10 @@ const StyledTableTd = styled.td`
   border-bottom: 1px solid #e1e4e8;
 `
 
-const Statuses = ['Open', 'Close']
-
-const IssueBody = ({ searchFields, handleCheck, setIsChecked, isChecked }) => {
+const IssueBody = ({ searchFields, isChecked, setIsChecked }) => {
   const dispatch = useDispatch()
-  const [isCheckedAll, setIsCheckedAll] = useState(false)
-
   const data = useSelector((state) => state.issue.data)
+  const [isCheckedAll, setIsCheckedAll] = useState(false)
 
   const handleModalShow = (e, data) => {
     dispatch(push(<IssueForm defaultValue={data} />))
@@ -64,16 +62,34 @@ const IssueBody = ({ searchFields, handleCheck, setIsChecked, isChecked }) => {
     dispatch(toggle())
   }
 
+  const handleCheck = (issueNumber) => {
+    const newIsChecked = [...isChecked]
+
+    // issueNumberが配列に存在するか確認
+    const index = newIsChecked.indexOf(issueNumber)
+
+    if (index !== -1) {
+      newIsChecked.splice(index, 1)
+    } else {
+      newIsChecked.push(issueNumber)
+    }
+
+    setIsChecked(newIsChecked)
+  }
+
   const handleCheckboxAll = (data) => {
     setIsCheckedAll(!isCheckedAll)
 
-    const newIsChecked = { ...isChecked }
-    data.forEach((item) => {
-      newIsChecked[item.id] = !isCheckedAll
+    const newIsChecked = data.map((item) => {
+      return isCheckedAll ? false : item.number
     })
 
     setIsChecked(newIsChecked)
   }
+
+  useEffect(() => {
+    dispatch(fetchIssueData())
+  }, [dispatch])
 
   return (
     <StyledTableContainer>
@@ -92,21 +108,21 @@ const IssueBody = ({ searchFields, handleCheck, setIsChecked, isChecked }) => {
         </thead>
         <tbody>
           {searchFields.length > 0 ? (
-            searchFields.map((data) => (
+            data.map((data) => (
               <StyledTableTr key={data.id} onClick={(e) => handleModalShow(e, data)}>
                 <StyledTableTd>
                   <input
                     type="checkbox"
                     onClick={(e) => e.stopPropagation()}
-                    onChange={() => handleCheck(data.id)}
-                    checked={isChecked[data.id] || false}
+                    onChange={() => handleCheck(data.number)}
+                    checked={isChecked.includes(data.number)}
                   />
                 </StyledTableTd>
-                <StyledTableTd className="longCdatal">{data.title}</StyledTableTd>
-                <StyledTableTd>{Statuses[data.status]}</StyledTableTd>
-                <StyledTableTd>{data.author}</StyledTableTd>
-                <StyledTableTd>{data.createdDate}</StyledTableTd>
-                <StyledTableTd>{data.updatedDate}</StyledTableTd>
+                <StyledTableTd>{data.title}</StyledTableTd>
+                <StyledTableTd>{data.state}</StyledTableTd>
+                <StyledTableTd>{data.user.login}</StyledTableTd>
+                <StyledTableTd>{data.createdAt}</StyledTableTd>
+                <StyledTableTd>{data.updatedAt}</StyledTableTd>
               </StyledTableTr>
             ))
           ) : (

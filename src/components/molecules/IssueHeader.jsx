@@ -3,9 +3,11 @@ import Button from '../atoms/Button'
 import HeaderTitle from '../atoms/HeaderTitle'
 import Input from '../atoms/Input'
 import IssueForm from '../organisms/IssueForm'
-import { useDispatch, useSelector } from 'react-redux'
+import { useDispatch } from 'react-redux'
 import { toggle, push } from '../../features/ui/uiSlice'
-import { remove } from '../../features/issue/issueSlice'
+import { closeIssue } from '../../features/issue/issueSlice'
+import { toast } from 'react-toastify'
+import { toastConfig } from '../../toastConfig'
 
 const StyledHeader = styled.header`
   display: flex;
@@ -28,26 +30,39 @@ const StyledHeader = styled.header`
 
 const IssueHeader = ({ onSearchFeilds, isChecked }) => {
   const dispatch = useDispatch()
-  const data = useSelector((state) => state.issue.data)
 
   const onAdd = () => {
     dispatch(push(<IssueForm />))
     dispatch(toggle())
   }
 
-  const onDelete = () => {
-    // isCheckedオブジェクトを用いて、選択されているIssueのidを特定
-    const selectedIds = Object.keys(isChecked).filter((id) => isChecked[id])
+  const onClose = async () => {
+    if (isChecked.length === 0) {
+      toast.warn('Please Check an issue at least', toastConfig)
+      return
+    }
 
-    dispatch(remove(selectedIds))
+    try {
+      const response = await dispatch(closeIssue(isChecked))
+      Object.keys(response.messages).forEach(key => {
+        const { type, message } = response.messages[key]
+        if (toast[type]) {
+          toast[type](message, toastConfig)
+        }
+      })
+    } catch {
+      toast.error("Faield to close issue", toastConfig)
+    }
   }
 
   return (
     <StyledHeader>
       <HeaderTitle title="Issue" />
       <Input onSearchFeilds={onSearchFeilds} />
-      <Button text="New" onClick={onAdd} />
-      <Button text="Ddelete" onClick={onDelete} styleType="delete" />
+      <Button onClick={onAdd}>New</Button>
+      <Button onClick={onClose} styleType="delete" disabled={isChecked.length === 0 ? true : false}>
+        Close Issue
+      </Button>
     </StyledHeader>
   )
 }

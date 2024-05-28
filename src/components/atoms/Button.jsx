@@ -6,7 +6,7 @@ const StyleBasedButton = styled.button`
   text-align: center;
   padding: 8px 16px;
   margin: 4px;
-  width: 120px;
+  width: 180px;
   min-width: 100px;
   border-radius: 6px;
   color: white;
@@ -58,9 +58,9 @@ const buttonStyleLists = {
   transparent: StyledButtonTransparent,
 }
 
-const Button = ({ text, styleType, onClick }) => {
+const Button = ({ children, styleType, onClick }) => {
   const Component = buttonStyleLists[styleType] || buttonStyleLists.default
 
-  return <Component onClick={onClick}>{text}</Component>
+  return <Component onClick={onClick}>{children}</Component>
 }
 export default Button

@@ -12,18 +12,12 @@ import TabPanels from '../molecules/TabPanels'
 const Tabs = () => {
   const [selectedTab, setSelectedTab] = useState(Tab.length)
   const [searchField, setSearchField] = useState('')
-  const [isChecked, setIsChecked] = useState({})
+  const [isChecked, setIsChecked] = useState([])
   const [isActive, setIsActive] = useState(false)
   const data = useSelector((state) => state.issue.data)
 
   const handleTabSelect = (index) => {
     setSelectedTab(index)
-  }
-
-  const handleCheck = (id) => {
-    const newIsChecked = { ...isChecked }
-    newIsChecked[id] = !newIsChecked[id]
-    setIsChecked(newIsChecked)
   }
 
   const onSearchFeilds = (e) => {
@@ -45,7 +39,7 @@ const Tabs = () => {
       <TabPanels>
         <TabPanel selectedTab={selectedTab === 1}>
           <IssueHeader onSearchFeilds={onSearchFeilds} isChecked={isChecked} />
-          <IssueBody searchFields={searchFields} handleCheck={handleCheck} setIsChecked={setIsChecked} isChecked={isChecked} />
+          <IssueBody searchFields={searchFields} setIsChecked={setIsChecked} isChecked={isChecked} />
         </TabPanel>
         <TabPanel selectedTab={selectedTab === 2}>
           <Title title="PullRequest" centering />
